@@ -1,7 +1,7 @@
 <?php
 
-
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 use App\Category;
 
 use Illuminate\Http\Request;
@@ -15,7 +15,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return response()->json(Category::all());
+        return response()->json(Category::where('user_id',Auth::id())->with('clothe')->get());
+
     }
 
     /**
@@ -37,6 +38,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $new_category = new Category();
+        $new_category->user_id = Auth::id();
         $new_category->title = $request->title;
         $new_category->save();
         return response()->json($new_category);
@@ -74,6 +76,7 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $old_category = Category::find($id);
+        $old_category->user_id = Auth::id();
         $old_category->title = $request->title;
         $old_category->save();
         return response()->json($old_category);

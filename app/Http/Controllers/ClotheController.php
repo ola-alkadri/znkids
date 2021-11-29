@@ -38,6 +38,7 @@ class ClotheController extends Controller
     public function store(Request $request)
     {
         $new_clothe = new Clothe();
+        $new_clothe->user_id = Auth::id();
         $new_clothe->category_id = $request->category_id;
         $new_clothe->code = $request->code;
         $new_clothe->age = $request->age;
@@ -78,6 +79,7 @@ class ClotheController extends Controller
     public function update(Request $request, $id)
     {
         $old_clothe = Clothe::find($id);
+        $new_clothe->user_id = Auth::id();
         $old_clothe->category_id = $request->category_id;
         $old_clothe->code = $request->code;
         $old_clothe->age = $request->age;

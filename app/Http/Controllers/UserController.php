@@ -39,4 +39,14 @@ class UserController extends Controller
         ]);
      }
 
+     public function updateUser (Request $request, $id)
+     {
+        $old_user = User::find($id);
+        $old_user->name = $request->name;
+        $old_user->email = $request->email;
+        $old_user->password = $request->password;
+        $old_user->save();
+        return response()->json($old_user);
+     }
+
 }

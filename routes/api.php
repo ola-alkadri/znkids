@@ -19,6 +19,8 @@ Route::get('/app/logout','UserController@logout');
 
 Route::middleware(['auth:api'])->group(function(){
 
+    Route::post('/users/update/{id}','UserController@updateUser');
+
     //Categories Routes
     Route::get('/categories/index','CategoryController@index');
 
