@@ -19,6 +19,12 @@ Route::get('/app/logout','UserController@logout');
 
 Route::middleware(['auth:api'])->group(function(){
 
+
+    Route::get('/notify/{userToken}','UserController@notifyUser');
+
+    //Users Routes
+    Route::get('/users/all','UserController@getAllUsers');
+    Route::get('/users/getuser','UserController@getUser');
     Route::post('/users/update/{id}','UserController@updateUser');
 
     //Categories Routes

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Profile;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -37,8 +38,21 @@ class UserController extends Controller
             'api_token' => Str::random(80),
 
         ]);
-     }
 
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->fcm_token = $request->fcm_token;
+        $profile->latitude = $request->latitude;
+        $profile->longitude = $request->longitude;
+        $profile->save();
+
+        return response()->json($user);
+     }
+     public function getUser()
+     {
+         return response()->json(User::where('id',Auth::id())->get());
+ 
+     }
      public function updateUser (Request $request, $id)
      {
         $old_user = User::find($id);
@@ -48,5 +62,70 @@ class UserController extends Controller
         $old_user->save();
         return response()->json($old_user);
      }
+
+     public function getAllUsers(){
+
+      $users = User::with('profile')->get()->except(Auth::id());
+
+      return response()->json($users);
+
+  }
+
+  public function notifyUser($userToken){
+
+      $getTokenOwnerData = Profile::where('fcm_token',$userToken)->with('user')->first();
+
+      $SERVER_API_KEY = 'AAAAMCrY6K8:APA91bERx_XR1lukeLPI0JjNEOJHz74AkayCM-TzB4TN46SLHnIyBjc4Vr7l42vEjrVAKzUsf60gxjo4VLbLBpVmkzy6N8XFUFLuI2tsJwMDCK6N61h2y6pD7jEvQ14Y-gDWw1mlC7kP';
+
+      $data = [
+
+          "registration_ids" => [$userToken],
+
+          "notification" => [
+
+              "title" => "Dear ".$getTokenOwnerData->user->name." Attention",
+
+              "body" => Auth::user()->name." Visited Your Profile",
+
+              // "sound"=>true,
+
+              // 'image' => $request->image_url
+
+          ],
+
+          "data" => [
+              'click_action'=> 'FLUTTER_NOTIFICATION_CLICK',
+          ],
+
+      ];
+
+      $dataString = json_encode($data);
+
+      $headers = [
+
+          'Authorization: key=' . $SERVER_API_KEY,
+
+          'Content-Type: application/json',
+
+      ];
+
+      $ch = curl_init();
+
+      curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+
+      curl_setopt($ch, CURLOPT_POST, true);
+
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+      curl_exec($ch);
+
+      return response()->json(1);
+  }
 
 }
