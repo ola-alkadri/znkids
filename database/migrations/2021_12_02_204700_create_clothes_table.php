@@ -20,8 +20,8 @@ class CreateClothesTable extends Migration
             $table->string('code');
             $table->string('age');
             $table->string('price');
-            $table->foreign('user_id')->refrences('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('category_id')->refrences('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }
